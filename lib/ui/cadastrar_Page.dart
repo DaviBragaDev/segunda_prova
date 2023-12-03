@@ -12,6 +12,7 @@ class CadastroPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text("Cadastro de Usuários"),
       ),
       body: FormUsuarioBody(),
@@ -39,31 +40,35 @@ class _FormUsuarioBodyState extends State<FormUsuarioBody> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildTextField("Nome", nomeController),
-            _buildTextField("Nacionalidade", nacionalidadeController),
-            _buildTextField("Idade", idadeController, TextInputType.number),
-            _buildTextField("Peso", pesoController, TextInputType.number),
-            _buildTextField("Raça", racaController),
-            _buildTextField("Sexo", sexoController),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed:  () => _cadastrarUsuario(),
-              child: const Text("Cadastrar"),
-            ),
-          ],
+    return SingleChildScrollView(
+      // Adicionando o SingleChildScrollView aqui
+      child: Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildTextField("Nome", nomeController),
+              _buildTextField("Nacionalidade", nacionalidadeController),
+              _buildTextField("Idade", idadeController, TextInputType.number),
+              _buildTextField("Peso", pesoController, TextInputType.number),
+              _buildTextField("Raça", racaController),
+              _buildTextField("Sexo", sexoController),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => _cadastrarUsuario(),
+                child: const Text("Cadastrar"),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildTextField(String labelText, TextEditingController controller, [TextInputType? keyboardType]) {
+  Widget _buildTextField(String labelText, TextEditingController controller,
+      [TextInputType? keyboardType]) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextFormField(
@@ -86,12 +91,12 @@ class _FormUsuarioBodyState extends State<FormUsuarioBody> {
   void _cadastrarUsuario() async {
     if (_formKey.currentState?.validate() ?? false) {
       Usuario user = Usuario(
-        nomeController.text,
-        nacionalidadeController.text,
+        nomeController.text.toLowerCase(),
+        nacionalidadeController.text.toLowerCase(),
         int.parse(idadeController.text),
-        racaController.text,
+        racaController.text.toLowerCase(),
         int.parse(pesoController.text),
-        sexoController.text,
+        sexoController.text.toLowerCase(),
       );
       await usuarioHelper.saveUsuario(user);
 
@@ -102,11 +107,11 @@ class _FormUsuarioBodyState extends State<FormUsuarioBody> {
       );
 
       Navigator.pop(context);
-      
+
       Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const HomePage()),
-    );
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
     }
   }
 }

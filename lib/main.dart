@@ -4,7 +4,6 @@ import 'package:segunda_prova/ui/telaHome_page.dart';
 import 'package:path/path.dart';
 
 void main() async {
-
   runApp(const MyApp());
 }
 
@@ -17,7 +16,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.yellow),
         useMaterial3: true,
         textTheme: TextTheme(
           displayLarge: TextStyle(
@@ -36,4 +35,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

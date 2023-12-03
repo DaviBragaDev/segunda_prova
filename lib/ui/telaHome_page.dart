@@ -3,22 +3,37 @@ import 'package:segunda_prova/domain/Usuario.dart';
 import 'package:segunda_prova/helpers/usuario_helper.dart';
 import 'package:segunda_prova/ui/cadastrar_Page.dart';
 import 'package:segunda_prova/ui/editar_Page.dart';
+import 'package:segunda_prova/ui/telaDetalhes_Page.dart';
 
-
+import 'info_Page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("Meus USERS"),
-      ),
+          centerTitle: true,
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: const Text("Usuários"),
+          actions: [
+            IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => InfoPage(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.account_tree_rounded),
+            ),
+          ]),
+
       body: HomeBody(),
       //BUTTON DE CADASTRO
-      floatingActionButton: FloatingActionButton(   
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
@@ -33,6 +48,12 @@ class HomePage extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.background,
     );
   }
+
+  // Método para recarregar os usuários
+  void _reloadUsuarios(BuildContext context) {
+    final _homeBodyState = HomeBody.of(context);
+    _homeBodyState?.loadUsuarios();
+  }
 }
 
 class HomeBody extends StatefulWidget {
@@ -40,28 +61,40 @@ class HomeBody extends StatefulWidget {
 
   @override
   State<HomeBody> createState() => _HomeBodyState();
+
+  // Método estático para acessar o estado de HomeBody de fora da classe
+  static _HomeBodyState? of(BuildContext context) {
+    return context.findAncestorStateOfType<_HomeBodyState>();
+  }
 }
 
 class _HomeBodyState extends State<HomeBody> {
   final usuarioHelper = UsuarioHelper();
-  late Future<List> usuarios;
+  late Future<List<Usuario>> usuarios;
 
   @override
   void initState() {
     super.initState();
-    usuarios = usuarioHelper.getAllUsuarios();
+    loadUsuarios();
   }
 
-   @override
+  Future<void> loadUsuarios() async {
+    setState(() {
+      usuarios = usuarioHelper.getAllUsuarios();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
+    return FutureBuilder<List<Usuario>>(
       future: usuarios,
       builder: (context, snapshot) {
-        return snapshot.hasData  ? ListView.builder(
+        return snapshot.hasData
+            ? ListView.builder(
                 padding: const EdgeInsets.all(10.0),
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, i) {
-                  return ListItem(usuario: snapshot.data![i]);
+                  return _buildListItem(snapshot.data![i]);
                 },
               )
             : const Center(
@@ -70,70 +103,39 @@ class _HomeBodyState extends State<HomeBody> {
       },
     );
   }
-}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class ListItem extends StatelessWidget {
-  final Usuario usuario;
-  const ListItem({Key? key, required this.usuario});
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildListItem(Usuario usuario) {
     return GestureDetector(
       onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Toque Único"),
-        ));
-      },
-      onLongPress: () {
         Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => TelaAltera(idUsuario: usuario.id,),
-            ),
-          );
-        
+          context,
+          MaterialPageRoute(
+            builder: (context) => TelaDetalhes(idUsuario: usuario.id),
+          ),
+        );
+      },
+      onLongPress: () async {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TelaAltera(idUsuario: usuario.id),
+          ),
+        );
+
+        if (result != null) {
+          Usuario usuarioRecebido = result;
+          print(usuarioRecebido.id);
+          print(usuarioRecebido.nome);
+          print(usuarioRecebido.nacionalidade);
+          print(usuarioRecebido.raca);
+          print(usuarioRecebido.peso);
+          print(usuarioRecebido.sexo);
+          await usuarioHelper.updateUsuario(usuarioRecebido);
+          loadUsuarios();
+        }
       },
       child: ListTile(
         title: Text(usuario.nome),
-        
       ),
     );
   }

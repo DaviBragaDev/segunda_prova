@@ -11,7 +11,6 @@ class UsuarioHelper {
   UsuarioHelper.internal();
 
   Database? _db;
-  
 
   Future<Database?> get db async {
     if (_db == null) _db = await initDb();
@@ -19,24 +18,23 @@ class UsuarioHelper {
   }
 
   Future<Database> initDb() async {
-  String? databasesPath = await getDatabasesPath();
-  if (databasesPath == null) databasesPath = "";
-  String path = join(databasesPath, "usuarios.db");
+    String? databasesPath = await getDatabasesPath();
+    if (databasesPath == null) databasesPath = "";
+    String path = join(databasesPath, "usuarios.db");
 
-  return await openDatabase(path, version: 1,
-      onCreate: (Database db, int newerVersion) async {
-    await db.execute(
-      "CREATE TABLE ${Usuario.usuarioTable}("
-      "${Usuario.idColumn} INTEGER PRIMARY KEY AUTOINCREMENT, "
-      "${Usuario.nomeColumn} TEXT, "
-      "${Usuario.nacionalidadeColumn} TEXT, "
-      "${Usuario.sexoColumn} TEXT, "
-      "${Usuario.idadeColumn} INTEGER, "
-      "${Usuario.racaColumn} TEXT, "
-      "${Usuario.pesoColumn} INTEGER)"
-    );
-  });
-}
+    return await openDatabase(path, version: 1,
+        onCreate: (Database db, int newerVersion) async {
+      await db.execute("CREATE TABLE ${Usuario.usuarioTable}("
+          "${Usuario.idColumn} INTEGER PRIMARY KEY AUTOINCREMENT, "
+          "${Usuario.nomeColumn} TEXT, "
+          "${Usuario.nacionalidadeColumn} TEXT, "
+          "${Usuario.sexoColumn} TEXT, "
+          "${Usuario.idadeColumn} INTEGER, "
+          "${Usuario.racaColumn} TEXT, "
+          "${Usuario.pesoColumn} INTEGER)");
+    });
+  }
+
   Future<Usuario> saveUsuario(Usuario u) async {
     Database? dbUsuario = await db;
     if (dbUsuario != null) {
@@ -87,13 +85,14 @@ class UsuarioHelper {
     }
   }
 
-  Future<List> getAllUsuarios() async {
+  Future<List<Usuario>> getAllUsuarios() async {
     Database? dbUsuario = await db;
     if (dbUsuario != null) {
-      List listMap = await dbUsuario.query(Usuario.usuarioTable);
+      List<Map<String, dynamic>> listMap =
+          await dbUsuario.query(Usuario.usuarioTable);
       List<Usuario> listUsuarios = [];
 
-      for (Map m in listMap) {
+      for (Map<String, dynamic> m in listMap) {
         listUsuarios.add(Usuario.fromMap(m));
       }
       return listUsuarios;

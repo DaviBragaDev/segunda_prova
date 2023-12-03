@@ -1,7 +1,4 @@
-
-
-class Usuario{
-
+class Usuario {
   static const String usuarioTable = "usuario_table";
 
   static const String idColumn = "id";
@@ -22,7 +19,8 @@ class Usuario{
   int peso = 0;
   int idade = 0;
 
-  Usuario(this.nome, this.nacionalidade, this.idade, this.raca, this.peso, this.sexo);
+  Usuario(this.nome, this.nacionalidade, this.idade, this.raca, this.peso,
+      this.sexo);
 
   Usuario.fromMap(Map map) {
     id = map[idColumn];
@@ -38,15 +36,15 @@ class Usuario{
     return {
       nomeColumn: nome,
       nacionalidadeColumn: nacionalidade,
-      sexoColumn:sexo,
-      racaColumn:raca,
-      pesoColumn:peso,
-      idadeColumn:idade
+      sexoColumn: sexo,
+      racaColumn: raca,
+      pesoColumn: peso,
+      idadeColumn: idade
     };
   }
 
   @override
   String toString() {
-    return 'Livro{nome: $nome, nacionalidade: $nacionalidade, sexo: $sexo, raca: $raca, peso: $peso, idadeColumn: $idadeColumn}';
+    return 'Usuario{nome: $nome, nacionalidade: $nacionalidade, sexo: $sexo, raca: $raca, peso: $peso, idadeColumn: $idadeColumn}';
   }
 }
